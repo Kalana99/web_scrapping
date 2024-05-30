@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "build",
+    "public": "scrapper_fe/build",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "/scrapper_fe/index.html"
       }
     ]
   }
