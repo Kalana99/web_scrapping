@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/scrapper_fe/index.html"
+        "destination": "/index.html"
       }
     ]
   }
