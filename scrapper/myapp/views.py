@@ -37,7 +37,7 @@ def single_website_scan(request):
     if name and url:
         
         changes = fetch_and_compare_website_content(name, url)
-        return Response({"changes": changes})
+        return Response(changes)
     
     return Response({"error": "Name and URL are required"}, status=400)
 

@@ -50,7 +50,11 @@ class WebScanner:
             }, current_content)
         else:
             print(f"No change detected for {name}")
-            return None
+            return ({
+                "name": name,
+                "url": url,
+                "summary": "No changes detected"
+            }, current_content)
         
     def compare_text(self, text1, text2):
         

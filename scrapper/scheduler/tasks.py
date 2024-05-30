@@ -58,10 +58,8 @@ def fetch_and_compare_website_content(name, url):
     
     web_scanner = WebScanner()    
     response = web_scanner.scan_single_website(name, url)
-    
-    if response:
-        return response[0]['summary']
-    return None
+
+    return response[0]
 
 @shared_task
 def compare_text(text1, text2):
