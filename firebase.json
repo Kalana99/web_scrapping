@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "scrapper_fe/build",
+    "public": "scrapper_fe/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
