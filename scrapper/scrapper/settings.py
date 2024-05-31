@@ -38,7 +38,9 @@ SECRET_KEY = env('SECRET_KEY')
 # DEBUG = env('DEBUG')
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'web-scrapping-aolr.onrender.com',
+]
 
 # Application definition
 
