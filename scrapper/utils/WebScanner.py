@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import difflib
-import hashlib
+import json
+import os
 from openai import OpenAI
 
 from utils.ExcelReader import ExcelReader
@@ -41,7 +42,7 @@ class WebScanner:
             changes = self._get_changes(current_content, previous_content)
             summary = self._summarize_changes(changes)
             
-            self._save_current_content(name, current_content, summary.message.content)
+            self._save_current_content(name, url, current_content)
             
             return ({
                 "name": name,
@@ -76,12 +77,22 @@ class WebScanner:
     
     def _load_previous_content(self, name):
         
+        file_path = "utils/web/current/content.json"
+        
         try:
-            with open(f"utils/web/current/{name}.txt", 'r') as file:
-                previous_content = file.read()
-                return previous_content
+            with open(file_path, 'r') as file:
+                try:
+                    data = json.load(file)
+                except json.JSONDecodeError:
+                    data = []
         except FileNotFoundError:
-            return ""
+            data = []
+
+        for obj in data:
+            if obj.get('name') == name:
+                return obj.get('content', "")
+        
+        return ""
         
     def _get_changes(self, current_content, previous_content):
         
@@ -103,13 +114,39 @@ class WebScanner:
         )
         return response.choices[0]
 
-    def _save_current_content(self, name, current_content, summary_content):
+    def _save_current_content(self, name, url, current_content):
         
-        with open(f"utils/web/current/{name}.txt", 'w') as file:
-            file.write(current_content)
-                
-        with open(f"utils/web/result/{name}-result.txt", 'w') as file:
-            file.write(summary_content)
+        file_path = "utils/web/current/content.json"
+
+        # Load existing data from the file or initialize an empty list
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                try:
+                    data = json.load(file)
+                except json.JSONDecodeError:
+                    data = []
+        else:
+            data = []
+
+        # Check if an object with the given name and URL already exists
+        updated = False
+        for obj in data:
+            if obj.get('name') == name and obj.get('url') == url:
+                obj['content'] = current_content
+                updated = True
+                break
+
+        # If no existing object was updated, append the new object
+        if not updated:
+            data.append({
+                'name': name,
+                'url': url,
+                'content': current_content
+            })
+
+        # Write the updated data back to the file
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
 
     def _send_notification(self, website):
         
