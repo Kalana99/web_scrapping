@@ -19,7 +19,7 @@ function AppBarComp() {
                         }
                     }}
                 >
-                    Web Tools
+                    ScrapperAI
                 </Typography>
             </Toolbar>
         </AppBar>

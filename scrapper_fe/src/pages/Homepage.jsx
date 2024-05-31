@@ -1,31 +1,58 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Typography, Container, List, ListItem, ListItemText, Button } from '@mui/material';
+import { Typography, Container, Grid, Card, CardActionArea, CardContent } from '@mui/material';
 
 function Homepage() {
     return (
-        <div className='container container-fluid mx-auto'>
-            <Container maxWidth="md" sx={{ marginTop: 4 }}>
+        <div className='container container-fluid mx-auto' style={{ minHeight: '100vh' }}>
+            <Container maxWidth="md" sx={{ marginTop: 4, textAlign: 'center' }}>
                 <Typography variant="h4" gutterBottom>
-                    Welcome to Web Tools
+                    Welcome to ScrapperAI
                 </Typography>
-                <List sx={{ mt: 2 }}>
-                    <ListItem sx={{ mb: 2 }}>
-                        <Button variant="outlined" component={Link} to="/website-comparison" fullWidth>
-                            <ListItemText primary="Website Content Comparison" />
-                        </Button>
-                    </ListItem>
-                    <ListItem sx={{ mb: 2 }}>
-                        <Button variant="outlined" component={Link} to="/news-scraping" fullWidth>
-                            <ListItemText primary="News Scraping" />
-                        </Button>
-                    </ListItem>
-                    <ListItem>
-                        <Button variant="outlined" component={Link} to="/text-comparison" fullWidth>
-                            <ListItemText primary="Text Comparison" />
-                        </Button>
-                    </ListItem>
-                </List>
+                <Grid container spacing={4} sx={{ marginTop: 2 }}>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
+                            <CardActionArea component={Link} to="/website-comparison">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        Website Content Comparison
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Compare content between websites
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
+                            <CardActionArea component={Link} to="/news-scraping">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        News Scraping
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Scrape news articles from various sources
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
+                            <CardActionArea component={Link} to="/text-comparison">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        Text Comparison
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Compare text content for similarities
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                </Grid>
             </Container>
         </div>
     );
