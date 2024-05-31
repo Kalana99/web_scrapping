@@ -161,6 +161,8 @@ CELERY_BEAT_SCHEDULE = {
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://scrapper-9cbf0.firebaseapp.com",
+    "https://scrapper-9cbf0.web.app",
 ]
 
 # If you want to allow all origins (not recommended for production)
