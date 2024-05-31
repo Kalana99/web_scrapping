@@ -39,8 +39,7 @@ class WebScanner:
         
         if current_content != previous_content:
             
-            changes = self._get_changes(current_content, previous_content)
-            summary = self._summarize_changes(changes)
+            summary = self._summarize_diff(previous_content, current_content)
             
             self._save_current_content(name, url, current_content)
             
@@ -59,8 +58,7 @@ class WebScanner:
         
     def compare_text(self, text1, text2):
         
-        changes = self._get_changes(text1, text2)
-        summary = self._summarize_changes(changes)
+        summary  = self._summarize_diff(text1, text2)
         
         return summary.message.content
 
@@ -109,6 +107,19 @@ class WebScanner:
                 {
                     "role": "user",
                     "content": f"Summarize the following changes:\n\n{changes}",
+                }
+            ],
+        )
+        return response.choices[0]
+    
+    def _summarize_diff(self, text1, text2):
+        
+        response = self.client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Summarize the differences from the following first text to the second text. Make sure to point out the spelling changes: \n\nText1: \n{text1}\n\nText2: \n{text2}",
                 }
             ],
         )
