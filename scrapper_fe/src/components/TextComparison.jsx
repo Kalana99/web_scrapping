@@ -9,16 +9,21 @@ function TextComparison() {
     const [text1, setText1] = useState('');
     const [text2, setText2] = useState('');
     const [errors, setErrors] = useState({});
-    const [response, setResponse] = useState('');
+    const [response, setResponse] = useState({});
 
     const handleSubmit = async (e) => {
 
         e.preventDefault();
+        setResponse({});
 
         if (text1.trim() !== '' || text2.trim() !== '') {
+
             const result = await textCompare({ text1, text2 });
-            console.log(result)
-            setResponse(result);
+            const formatedResult = result.diff.replace(/\n/g, '');
+
+            console.log(formatedResult)
+            
+            setResponse({"diff": formatedResult});
         } 
         else {
             setErrors({ text: 'At least one of the fields are required.' });
