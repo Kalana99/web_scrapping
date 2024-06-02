@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Paper } from '@mui/material';
 import useNewsScrap from '../hooks/useNewsScrap';
+import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 
 function NewsScrap() {
 
@@ -9,35 +10,37 @@ function NewsScrap() {
     const [name, setName] = useState('');
     const [errors, setErrors] = useState('');
     const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(false); // Loading state
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
         setArticles([]);
+        setLoading(true); // Activate loading state
 
         if (name.trim() !== '') {
-
             try {
                 const result = await newsScrap({ name });
                 setArticles(result);
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error('Error scraping news:', error);
                 setErrors('An error occurred while scraping news.');
+            } finally {
+                setLoading(false); // Deactivate loading state
             }
-        } 
-        else {
+        } else {
             setErrors('Name is required.');
+            setLoading(false); // Deactivate loading state
         }
     };
 
     return (
-        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
+        <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
             <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
                 News Scraping
             </Typography>
-            <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2 }}>
-                <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2, position: 'relative', minHeight: '200px', width: '100%' }}>
+                {loading && <LoadingScreen />} {/* Render LoadingScreen component when loading is true */}
+                <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '100%' }}>
                     <TextField
                         label="Client Name"
                         variant="outlined"
@@ -45,9 +48,10 @@ function NewsScrap() {
                         onChange={(e) => setName(e.target.value)}
                         sx={{ marginBottom: 2, width: '100%' }}
                         required
+                        disabled={loading} // Disable input fields and button when loading
                     />
                     {errors && <Typography variant="body2" sx={{ color: 'red', marginBottom: 2 }}>{errors}</Typography>}
-                    <Button type="submit" variant="contained" color="primary" sx={{ width: '100%' }}>
+                    <Button type="submit" variant="contained" color="primary" sx={{ width: '100%', fontSize: '1.1rem' }} disabled={loading}>
                         Scrape News
                     </Button>
                 </form>

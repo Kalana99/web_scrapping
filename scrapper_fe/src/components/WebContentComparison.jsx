@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Paper } from '@mui/material';
+import { Container, Typography, TextField, Button, Paper, Box } from '@mui/material';
 import useWebCompare from '../hooks/useWebCompare';
+import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
 
 function WebContentComparison() {
 
@@ -10,9 +11,9 @@ function WebContentComparison() {
     const [url, setUrl] = useState('');
     const [errors, setErrors] = useState({});
     const [response, setResponse] = useState('');
+    const [loading, setLoading] = useState(false); // Loading state
 
     const validate = () => {
-
         let tempErrors = {};
         let isValid = true;
 
@@ -32,47 +33,60 @@ function WebContentComparison() {
     };
 
     const handleSubmit = async (e) => {
-        
         e.preventDefault();
 
         if (validate()) {
-            const result = await webCompare({ name, url });
-            setResponse(result);
+            setLoading(true); // Activate loading state
+
+            try {
+                const result = await webCompare({ name, url });
+                setResponse(result);
+            } catch (error) {
+                console.error('Error comparing websites:', error);
+                // Handle error if needed
+            } finally {
+                setLoading(false); // Deactivate loading state
+            }
         }
     };
 
     return (
-        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
+        <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
             <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
                 Website Content Comparison
             </Typography>
-            <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2 }}>
-                <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <TextField
-                        label="Client Name"
-                        variant="outlined"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        sx={{ marginBottom: 2, width: '100%' }}
-                        error={!!errors.name}
-                        helperText={errors.name}
-                        required
-                    />
-                    <TextField
-                        label="URL"
-                        variant="outlined"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        sx={{ marginBottom: 2, width: '100%' }}
-                        error={!!errors.url}
-                        helperText={errors.url}
-                        required
-                    />
-                    <Button type="submit" variant="contained" color="primary" sx={{ width: '100%' }}>
-                        Compare
-                    </Button>
-                </form>
-            </Paper>
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2, position: 'relative', minHeight: '200px', width: '100%' }}>
+                    {loading && <LoadingScreen />} {/* Render LoadingScreen component when loading is true */}
+                    <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '100%' }}>
+                        <TextField
+                            label="Client Name"
+                            variant="outlined"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            sx={{ marginBottom: 2, width: '100%' }}
+                            error={!!errors.name}
+                            helperText={errors.name}
+                            disabled={loading} // Disable input fields and button when loading
+                            required
+                        />
+                        <TextField
+                            label="URL"
+                            variant="outlined"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            sx={{ marginBottom: 2, width: '100%' }}
+                            error={!!errors.url}
+                            helperText={errors.url}
+                            disabled={loading} // Disable input fields and button when loading
+                            required
+                        />
+                        <Button type="submit" variant="contained" color="primary" sx={{ width: '100%', fontSize: '1.1rem' }} disabled={loading}>
+                            Compare
+                        </Button>
+                    </form>
+                </Paper>
+            </Box>
             {response && (
                 <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', width: '100%' }}>
                     <Typography variant="h6" sx={{ marginBottom: 1 }}>
