@@ -51,6 +51,14 @@ def fetch_and_compare_website_content(name, url):
     return response[0]
 
 @shared_task
+def fetch_and_compare_two_websites(url1, url2):
+    
+    web_scanner = WebScanner()    
+    response = web_scanner.compare_two_websites(url1, url2)
+
+    return response
+
+@shared_task
 def compare_text(text1, text2):
     
     web_scanner = WebScanner()

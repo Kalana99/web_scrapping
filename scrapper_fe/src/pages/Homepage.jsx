@@ -10,7 +10,7 @@ function Homepage() {
                     Welcome to ScrapperAI
                 </Typography>
                 <Grid container spacing={4} sx={{ marginTop: 2 }}>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
                             <CardActionArea component={Link} to="/website-comparison">
                                 <CardContent>
@@ -24,7 +24,7 @@ function Homepage() {
                             </CardActionArea>
                         </Card>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
                             <CardActionArea component={Link} to="/news-scraping">
                                 <CardContent>
@@ -38,7 +38,7 @@ function Homepage() {
                             </CardActionArea>
                         </Card>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={3}>
                         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
                             <CardActionArea component={Link} to="/text-comparison">
                                 <CardContent>
@@ -47,6 +47,20 @@ function Homepage() {
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
                                         Compare text content for similarities
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={3}>
+                        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#f0f0f0', boxShadow: 3 }}>
+                            <CardActionArea component={Link} to="/url-comparison">
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        URL Comparison
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Compare content between two URLs
                                     </Typography>
                                 </CardContent>
                             </CardActionArea>

@@ -6,6 +6,7 @@ import Homepage from './pages/Homepage';
 import WebContentComparison from './components/WebContentComparison';
 import NewsScrap from './components/NewsScrap';
 import TextComparison from './components/TextComparison';
+import URLCompare from './components/URLCompare';
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/website-comparison" element={<WebContentComparison />} />
                     <Route path="/news-scraping" element={<NewsScrap />} />
                     <Route path="/text-comparison" element={<TextComparison />} />
+                    <Route path="/url-comparison" element={<URLCompare />} />
                 </Routes>
             </Router>
         </>

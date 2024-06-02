@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import NewsScanResult, WebsiteContent
 from .serializers import NewsScanResultSerializer, WebsiteContentSerializer
-from scheduler.tasks import fetch_news_for_name, fetch_and_compare_website_content, compare_text
+from scheduler.tasks import fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
 
 @api_view(['GET'])
 def news_scan_results(request):
@@ -53,3 +53,16 @@ def text_compare(request):
         return Response({"diff": '\n'.join(changes)})
     
     return Response({"error": "Text1 and Text2 are required"}, status=400)
+
+@api_view(['POST'])
+def web_compare(request):
+    
+    url1 = request.data.get('url1')
+    url2 = request.data.get('url2')
+    
+    if url1 and url2:
+        
+        changes = fetch_and_compare_two_websites(url1, url2)
+        return Response(changes)
+    
+    return Response({"error": "URL1 and URL2 are required"}, status=400)

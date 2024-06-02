@@ -55,6 +55,28 @@ class WebScanner:
                 "url": url,
                 "summary": "No changes detected"
             }, current_content)
+            
+    def compare_two_websites(self, url1, url2):
+        
+        content1 = self._fetch_current_content(url1)
+        content2 = self._fetch_current_content(url2)
+        
+        if content1 != content2:
+            
+            summary = self._summarize_diff_web(content1, content2)
+            
+            return {
+                "url1": url1,
+                "url2": url2,
+                "summary": summary.message.content
+            }
+        else:
+            print(f"No change detected")
+            return {
+                "url1": url1,
+                "url2": url2,
+                "summary": "No changes detected"
+            }
         
     def compare_text(self, text1, text2):
         
@@ -120,6 +142,19 @@ class WebScanner:
                 {
                     "role": "user",
                     "content": f"Summarize the differences from the following first text to the second text. Make sure to point out the spelling changes: \n\nText1: \n{text1}\n\nText2: \n{text2}",
+                }
+            ],
+        )
+        return response.choices[0]
+    
+    def _summarize_diff_web(self, text1, text2):
+        
+        response = self.client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Below provided the contents of two websites as Website1 and Website2. Summarize the differences between them. Point out what industries they are related to and explain the difences between the website contents: \n\nWebsite1: \n{text1}\n\nWebsite2: \n{text2}",
                 }
             ],
         )
