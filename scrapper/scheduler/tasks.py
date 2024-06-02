@@ -14,22 +14,9 @@ from utils.NewsScanner import NewsScanner
 
 @shared_task
 def fetch_news_for_names(names):
-    # Fetch news for a list of names
-    api_key = 'your_news_api_key'
-    base_url = 'https://newsapi.org/v2/everything'
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-    }
+
     for name in names:
-        params = {
-            'q': name,
-            'from': (timezone.now() - timedelta(days=1)).strftime('%Y-%m-%d'),
-            'to': timezone.now().strftime('%Y-%m-%d'),
-            'sortBy': 'publishedAt',
-            'language': 'en',
-        }
-        response = requests.get(base_url, headers=headers, params=params)
-        articles = response.json().get('articles', [])
+        articles = fetch_news_for_name(name)
         for article in articles:
             NewsScanResult.objects.create(
                 name=name,
@@ -50,14 +37,16 @@ def fetch_news_for_name(name):
 
 @shared_task
 def check_website_changes(names, urls):
+    
     for i in range(len(urls)):
+        # TODO: Add changes to a list
         fetch_and_compare_website_content(names[i], urls[i])
 
 @shared_task
 def fetch_and_compare_website_content(name, url):
     
     web_scanner = WebScanner()    
-    response = web_scanner.scan_single_website(name, url)
+    response= web_scanner.scan_single_website(name, url)
 
     return response[0]
 
