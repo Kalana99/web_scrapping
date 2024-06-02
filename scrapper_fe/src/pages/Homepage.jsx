@@ -5,7 +5,7 @@ import { Typography, Container, Grid, Card, CardActionArea, CardContent } from '
 function Homepage() {
     return (
         <div className='container container-fluid mx-auto' style={{ minHeight: '100vh' }}>
-            <Container maxWidth="md" sx={{ marginTop: 4, textAlign: 'center' }}>
+            <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 20, textAlign: 'center' }}>
                 <Typography variant="h4" gutterBottom>
                     Welcome to ScrapperAI
                 </Typography>
