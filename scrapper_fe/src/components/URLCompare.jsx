@@ -1,71 +1,92 @@
 import React, { useState } from 'react';
 import { Container, Grid, Typography, TextField, Button, Paper, Divider } from '@mui/material';
-import useTextCompare from '../hooks/useTextCompare';
+import useURLCompare from '../hooks/useURLCompare';
 
-function TextComparison() {
+function URLCompare() {
 
-    const { textCompare } = useTextCompare();
+    const { urlCompare } = useURLCompare();
 
-    const [text1, setText1] = useState('');
-    const [text2, setText2] = useState('');
-    const [errors, setErrors] = useState('');
+    const [url1, setUrl1] = useState('');
+    const [url2, setUrl2] = useState('');
+    const [errors, setErrors] = useState({});
     const [response, setResponse] = useState('');
+
+    const validate = () => {
+
+        let tempErrors = {};
+        let isValid = true;
+
+        const urlPattern = new RegExp('^(https?:\\/\\/)?');
+
+        if (!urlPattern.test(url1)) {
+            tempErrors.url1 = 'Enter a valid URL.';
+            isValid = false;
+        }
+
+        if (!urlPattern.test(url2)) {
+            tempErrors.url2 = 'Enter a valid URL.';
+            isValid = false;
+        }
+
+        setErrors(tempErrors);
+        return isValid;
+    };
 
     const handleSubmit = async (e) => {
 
         e.preventDefault();
         setResponse('');
 
-        if (text1.trim() !== '' || text2.trim() !== '') {
+        if (validate()) {
 
             try {
-                const result = await textCompare({ text1, text2 });
-                const formattedResult = result.diff.replace(/\n/g, '');
-                setResponse(formattedResult);
+                const result = await urlCompare({ url1, url2 });
+                console.log(result);
+                
+                setResponse(result.summary.replace(/\n/g, ''));
             } 
             catch (error) {
-                console.error('Error comparing text:', error);
-                setErrors('An error occurred while comparing text.');
+                console.error('Error comparing URLs:', error);
+                setErrors({ form: 'An error occurred while comparing URLs.' });
             }
-        } 
-        else {
-            setErrors('At least one of the fields is required.');
         }
     };
 
     return (
         <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
             <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
-                Text Comparison
+                Website Content Comparison
             </Typography>
             <Grid container spacing={4} justifyContent="center">
                 <Grid item xs={12} md={5}>
                     <Paper sx={{ padding: 2, minHeight: '200px', backgroundColor: '#f0f0f0', marginBottom: 2 }}>
                         <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column' }}>
                             <TextField
-                                label="Text 1"
-                                multiline
-                                rows={4}
+                                label="URL 1"
+                                type="url"
                                 fullWidth
                                 variant="outlined"
-                                value={text1}
-                                onChange={(e) => setText1(e.target.value)}
+                                value={url1}
+                                onChange={(e) => setUrl1(e.target.value)}
                                 sx={{ marginBottom: 2 }}
                                 required
+                                error={!!errors.url1}
+                                helperText={errors.url1}
                             />
                             <TextField
-                                label="Text 2"
-                                multiline
-                                rows={4}
+                                label="URL 2"
+                                type="url"
                                 fullWidth
                                 variant="outlined"
-                                value={text2}
-                                onChange={(e) => setText2(e.target.value)}
+                                value={url2}
+                                onChange={(e) => setUrl2(e.target.value)}
                                 sx={{ marginBottom: 2 }}
                                 required
+                                error={!!errors.url2}
+                                helperText={errors.url2}
                             />
-                            {errors && <Typography variant="body2" sx={{ color: 'red', marginBottom: 2 }}>{errors}</Typography>}
-                            <Button type="submit" variant="contained" color="primary" sx={{ alignSelf: 'flex-end' }}>
+                            {errors.form && <Typography variant="body2" sx={{ color: 'red', marginBottom: 2 }}>{errors.form}</Typography>}
+                            <Button type="submit" variant="contained" color="primary" sx={{ alignSelf: 'center' }}>
                                 Compare
                             </Button>
                         </form>
@@ -87,4 +108,4 @@ function TextComparison() {
     );
 }
 
-export default TextComparison;
+export default URLCompare;
