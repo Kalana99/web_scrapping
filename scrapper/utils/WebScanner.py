@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import requests
 from bs4 import BeautifulSoup
 import difflib
@@ -35,9 +36,23 @@ class WebScanner:
     def scan_single_website(self, name, url):
         
         current_content = self._fetch_current_content(url)
-        previous_content = self._load_previous_content(name)
+        previous_content = self._load_previous_content(name, url)
         
-        if current_content != previous_content:
+        today_date = datetime.today().strftime('%Y-%m-%d')
+        
+        if current_content == False:
+            
+            print(f"Invalid URL: {url}")
+            
+            return ({
+                "name": name,
+                "url": url,
+                "date": today_date,
+                "diff": False,
+                "summary": "Invalid URL. Required format: http(s)://example.domain (.com, .au, .lk, etc.)"
+            }, "")
+            
+        if previous_content == False or current_content != previous_content:
             
             summary = self._summarize_diff(previous_content, current_content)
             
@@ -46,13 +61,19 @@ class WebScanner:
             return ({
                 "name": name,
                 "url": url,
+                "date": today_date,
+                "diff": True,
                 "summary": summary.message.content
             }, current_content)
         else:
+            
             print(f"No change detected for {name}")
+            
             return ({
                 "name": name,
                 "url": url,
+                "date": today_date,
+                "diff": False,
                 "summary": "No changes detected"
             }, current_content)
             
@@ -86,18 +107,23 @@ class WebScanner:
 
     def _fetch_current_content(self, url):
         
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Extract text content excluding design elements
-        texts = soup.find_all(['p', 'h1', 'h2', 'h3'])
-        content = ' '.join([text.get_text() for text in texts])
-        
-        return content
+        try:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Extract text content excluding design elements
+            texts = soup.find_all(['p', 'h1', 'h2', 'h3'])
+            content = ' '.join([text.get_text() for text in texts])
+            
+            return content
+        except Exception as e:
+            print(f"Error fetching content from {url}: {e}")
+            return False
     
-    def _load_previous_content(self, name):
+    def _load_previous_content(self, name, url):
         
         file_path = "utils/web/current/content.json"
+        yesterday_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
         
         try:
             with open(file_path, 'r') as file:
@@ -109,10 +135,10 @@ class WebScanner:
             data = []
 
         for obj in data:
-            if obj.get('name') == name:
+            if obj.get('name') == name and obj.get('url') == url and obj.get('date') == yesterday_date:
                 return obj.get('content', "")
         
-        return ""
+        return False
         
     def _get_changes(self, current_content, previous_content):
         
@@ -163,6 +189,7 @@ class WebScanner:
     def _save_current_content(self, name, url, current_content):
         
         file_path = "utils/web/current/content.json"
+        today_date = datetime.today().strftime('%Y-%m-%d')
 
         # Load existing data from the file or initialize an empty list
         if os.path.exists(file_path):
@@ -177,7 +204,7 @@ class WebScanner:
         # Check if an object with the given name and URL already exists
         updated = False
         for obj in data:
-            if obj.get('name') == name and obj.get('url') == url:
+            if obj.get('name') == name and obj.get('url') == url and obj.get('date') == today_date:
                 obj['content'] = current_content
                 updated = True
                 break
@@ -187,6 +214,7 @@ class WebScanner:
             data.append({
                 'name': name,
                 'url': url,
+                'date': today_date,
                 'content': current_content
             })
 

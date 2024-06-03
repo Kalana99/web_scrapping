@@ -2,19 +2,29 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import NewsScanResult, WebsiteContent
 from .serializers import NewsScanResultSerializer, WebsiteContentSerializer
-from scheduler.tasks import fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
+from scheduler.tasks import fetch_news_for_names, check_website_changes, fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
+
+from utils.ExcelReader import ExcelReader
 
 @api_view(['GET'])
 def news_scan_results(request):
-    results = NewsScanResult.objects.all()
-    serializer = NewsScanResultSerializer(results, many=True)
-    return Response(serializer.data)
+    
+    names = ExcelReader.read_news()[1]
+    results = fetch_news_for_names(names)
+    
+    if results != False:
+        return Response({"message": "News scan completed", "results": results})
+    return Response({"error": "News scan failed"}, status=400)
 
 @api_view(['GET'])
 def website_content(request):
-    contents = WebsiteContent.objects.all()
-    serializer = WebsiteContentSerializer(contents, many=True)
-    return Response(serializer.data)
+    
+    names, urls = ExcelReader.read_web()
+    results = check_website_changes(names, urls)
+    
+    if results != False:
+        return Response({"message": "Website scan completed", "results": results})
+    return Response({"error": "No changes detected"}, status=400)
 
 @api_view(['POST'])
 def single_news_scan(request):

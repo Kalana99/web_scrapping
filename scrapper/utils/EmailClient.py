@@ -2,6 +2,7 @@ import os
 import json
 import base64
 from email.mime.text import MIMEText
+import resend
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -9,26 +10,19 @@ from googleapiclient.discovery import build
 import scrapper.settings as settings
 
 
-# msg['Subject'] = 'Clients in the news'
-# msg['Subject'] = 'Website Content Changes Detected'
-
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-
 class EmailClient:
     
     def __init__(self):
         
-        self.sender_email = settings.EMAIL_HOST_USER
-        self.sender_password = settings.EMAIL_HOST_PASSWORD
-        self.smtp_server = settings.EMAIL_HOST
-        self.smtp_port = settings.EMAIL_PORT
         self.to_email = settings.TO_EMAIL
+        self.from_email = settings.DEFAULT_FROM_EMAIL
+        self.scopes = settings.SCOPES
+        self.key = settings.EMAIL_API_KEY
         
-        self.token_path = "scrapper/utils/token.json"
-        self.cred_path = "scrapper/utils/credentials.json"
+        self.token_path = "utils/token.json"
+        self.cred_path = "utils/credentials.json"
         
         self.creds = None
-        self.scopes = SCOPES
         
 
     def get_gmail_service(self):
@@ -51,18 +45,43 @@ class EmailClient:
         
         return service
 
-    def send_email(self, subject, body_html, to):
+    # def send_email(self, subject, body_html):
         
-        service = self.get_gmail_service()
+    #     try:
+    #         service = self.get_gmail_service()
+            
+    #         message = MIMEText(body_html, 'html')
+    #         message['to'] = self.to_email
+    #         message['from'] = settings.DEFAULT_FROM_EMAIL
+    #         message['subject'] = subject
+            
+    #         raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    #         message = {'raw': raw_message}
+            
+    #         send_message = service.users().messages().send(userId='me', body=message).execute()
+            
+    #     except Exception as e:
+    #         print(e)
+    #         send_message = None
         
-        message = MIMEText(body_html, 'html')
-        message['to'] = to
-        message['from'] = settings.DEFAULT_FROM_EMAIL
-        message['subject'] = subject
+    #     return send_message
+    
+    def send_email(self, subject, body_html):
         
-        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        message = {'raw': raw_message}
-        
-        send_message = service.users().messages().send(userId='me', body=message).execute()
+        try:
+            resend.api_key = self.key
+            
+            response = resend.Emails.send({
+                "from": self.from_email,
+                "to": self.to_email,
+                "subject": subject,
+                "html": body_html
+            })
+            
+            send_message = True
+            
+        except Exception as e:
+            print(e)
+            send_message = None
         
         return send_message
