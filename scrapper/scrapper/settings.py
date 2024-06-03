@@ -15,6 +15,8 @@ from celery.schedules import crontab
 import os
 import environ
 
+from utils.ExcelReader import ExcelReader
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,9 +37,11 @@ env = environ.Env(
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = False
 
 ALLOWED_HOSTS = [
+    '0.0.0.0',
+    '127.0.0.1',
     'web-scrapping-aolr.onrender.com',
 ]
 
@@ -141,6 +145,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+news_out = ExcelReader.read_news()
+news_clients = news_out[0]
+news_names = news_out[1]
+
+web_out = ExcelReader.read_web()
+web_clients = web_out[0]
+web_urls = web_out[1]
+
 # Configure Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -148,12 +160,12 @@ CELERY_BEAT_SCHEDULE = {
     'fetch_news_every_weekday_morning': {
         'task': 'scheduler.tasks.fetch_news_for_names',
         'schedule': crontab(hour=9, minute=0, day_of_week='mon-fri'),
-        'args': (['List', 'of', 'Client', 'Names'],)
+        'args': (news_names,)
     },
     'check_website_changes_daily': {
         'task': 'scheduler.tasks.check_website_changes',
         'schedule': crontab(hour=1, minute=0, day_of_week='mon-sun'),
-        'args': (['example', 'example2'], ['https://example.com', 'https://example2.com'],)
+        'args': (web_clients, web_urls,)
     },
 }
 
@@ -187,6 +199,8 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 NEWS_API_KEY = env('NEWS_API_KEY')
