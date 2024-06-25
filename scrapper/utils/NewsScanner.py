@@ -29,23 +29,3 @@ class NewsScanner:
         response = self.apify_client_helper.run_actor(client_name)
         return response
     
-    # def prepare_email(self):
-        
-    #     # Parse the HTML content of the response
-    #     soup = BeautifulSoup(response.content, "html.parser")
-    #     articles = soup.find_all("article")
-
-    #     if len(articles) > 0:
-            
-    #         email_content = ""
-            
-    #         for article in articles:
-                
-    #             headline = article.find("h3").text.strip()
-    #             subheading = article.find("p").text.strip()
-    #             link = article.find("a")["href"]
-                
-    #             email_content += f"Headline: {headline}\n"
-    #             email_content += f"Subheading: {subheading}\n"
-    #             email_content += f"Link: {link}\n\n"
-    
