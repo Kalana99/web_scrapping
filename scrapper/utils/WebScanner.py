@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from bson import ObjectId
 import requests
 from bs4 import BeautifulSoup
 import difflib
@@ -8,7 +9,18 @@ from openai import OpenAI
 
 from utils.ExcelReader import ExcelReader
 import scrapper.settings as settings
+from scheduler.models import content_collection
 
+
+def convert_objectid_to_str(data):
+    if isinstance(data, list):
+        return [convert_objectid_to_str(item) for item in data]
+    elif isinstance(data, dict):
+        return {key: convert_objectid_to_str(value) for key, value in data.items()}
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
 
 class WebScanner:
     
@@ -54,7 +66,7 @@ class WebScanner:
             
         if previous_content == False or current_content != previous_content:
             
-            summary = self._summarize_diff(previous_content, current_content)
+            summary = self._summarize_website_changes(previous_content, current_content)
             
             self._save_current_content(name, url, current_content)
             
@@ -122,39 +134,25 @@ class WebScanner:
     
     def _load_previous_content(self, name, url):
         
-        file_path = "utils/web/current/content.json"
         yesterday_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
-        
+            
         try:
-            with open(file_path, 'r') as file:
-                try:
-                    data = json.load(file)
-                except json.JSONDecodeError:
-                    data = []
-        except FileNotFoundError:
-            data = []
+            prev_data = content_collection.find_one({"name": name, "url": url, "date": yesterday_date})
+        except Exception as e:
+            prev_data = {}
 
-        for obj in data:
-            if obj.get('name') == name and obj.get('url') == url and obj.get('date') == yesterday_date:
-                return obj.get('content', "")
-        
+        if prev_data:
+            return convert_objectid_to_str(prev_data).get('content', '')
         return False
-        
-    def _get_changes(self, current_content, previous_content):
-        
-        diff = difflib.ndiff(previous_content.splitlines(), current_content.splitlines())
-        changes = '\n'.join(diff)
-        
-        return changes
     
-    def _summarize_changes(self, changes):
+    def _summarize_website_changes(self, prev, cur):
         
         response = self.client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {
                     "role": "user",
-                    "content": f"Summarize the following changes:\n\n{changes}",
+                    "content": f"Summarize the differences from the following previous and current contents of the same website. If the first text is the word False, simply summarize the second text. Otherwise, pointout the changes/updates between the two text in a structured format. Make sure to point out the spelling changes, title or subtitle changes, description additions or deletions. \n\nPrevious: \n{prev}\n\nCurrent: \n{cur}",
                 }
             ],
         )
@@ -167,7 +165,7 @@ class WebScanner:
             messages=[
                 {
                     "role": "user",
-                    "content": f"Summarize the differences from the following first text to the second text. Make sure to point out the spelling changes: \n\nText1: \n{text1}\n\nText2: \n{text2}",
+                    "content": f"Summarize the differences from the following first text to the second text. If the first text is the word False, simply summarize the second text. Otherwise, pointout the changes between the two text in a structured format. Make sure to point out the spelling changes: \n\nText1: \n{text1}\n\nText2: \n{text2}",
                 }
             ],
         )
@@ -188,43 +186,14 @@ class WebScanner:
 
     def _save_current_content(self, name, url, current_content):
         
-        file_path = "utils/web/current/content.json"
         today_date = datetime.today().strftime('%Y-%m-%d')
-
-        # Load existing data from the file or initialize an empty list
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as file:
-                try:
-                    data = json.load(file)
-                except json.JSONDecodeError:
-                    data = []
-        else:
-            data = []
-
-        # Check if an object with the given name and URL already exists
-        updated = False
-        for obj in data:
-            if obj.get('name') == name and obj.get('url') == url and obj.get('date') == today_date:
-                obj['content'] = current_content
-                updated = True
-                break
-
-        # If no existing object was updated, append the new object
-        if not updated:
-            data.append({
-                'name': name,
-                'url': url,
-                'date': today_date,
-                'content': current_content
-            })
-
-        # Write the updated data back to the file
-        with open(file_path, 'w') as file:
-            json.dump(data, file, indent=4)
-
-    def _send_notification(self, website):
-        
-        # subject = f"Content change detected for {website}"
-        # body = f"There has been a change in the content of {website}. Please check it."
-        # email_content = f"<p>Changes detected on <a href='{url}'>{url}</a>:</p><p>{summary}</p>"
-        pass
+            
+        try:
+            if content_collection.find_one({"name": name, "url": url, "date": today_date}) is not None:
+                content_collection.update_one({"name": name, "url": url, "date": today_date}, {"$set": {"content": current_content}})
+            else:
+                content_collection.insert_one({"name": name, "url": url, "date": today_date, "content": current_content})
+        except Exception as e:
+            print(e)
+            print(f"Error saving content for {name} at {url}")
+            
