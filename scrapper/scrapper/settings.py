@@ -159,12 +159,12 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULE = {
     'fetch_news_every_weekday_morning': {
         'task': 'scheduler.tasks.fetch_news_for_names',
-        'schedule': crontab(hour=9, minute=0, day_of_week='mon-fri'),
+        'schedule': crontab(hour=6, minute=0, day_of_week='mon-fri'),
         'args': (news_names,)
     },
     'check_website_changes_daily': {
         'task': 'scheduler.tasks.check_website_changes',
-        'schedule': crontab(hour=1, minute=0, day_of_week='mon-sun'),
+        'schedule': crontab(hour=6, minute=0, day_of_week='mon-fri'),
         'args': (web_clients, web_urls,)
     },
 }
