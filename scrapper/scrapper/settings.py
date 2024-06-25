@@ -200,17 +200,13 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-
 OPENAI_API_KEY = env('OPENAI_API_KEY')
 NEWS_API_KEY = env('NEWS_API_KEY')
 
+DB_CONN = env('DB_CONN')
+DB_NAME = env('DB_NAME')
+
 # Configure email settings
-EMAIL_BACKEND = env('EMAIL_BACKEND')
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_PORT = env('EMAIL_PORT')
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 TO_EMAIL = env('TO_EMAIL')
+EMAIL_API_KEY = env('EMAIL_API_KEY')
