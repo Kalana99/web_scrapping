@@ -50,12 +50,9 @@ class WebScanner:
         current_html_content = self._fetch_current_content(url)
         previous_html_content = self._load_previous_content(name, url)
         
-        current_content = self._parse_html(current_html_content.text)
-        previous_content = self._parse_html(previous_html_content)
-        
         today_date = datetime.today().strftime('%Y-%m-%d')
         
-        if current_content == False:
+        if current_html_content == False:
             
             print(f"Invalid URL: {url}")
             
@@ -67,7 +64,13 @@ class WebScanner:
                 "summary": "Invalid URL or Service unavailable (try again later). Required format: http(s)://example.domain (.com, .au, .lk, etc.)"
             }, "")
             
-        if previous_content == False or current_content != previous_content:
+        current_content = self._parse_html(current_html_content.text)
+        previous_content = ""
+        
+        if previous_html_content != False:
+            previous_content = self._parse_html(previous_html_content)
+            
+        if previous_html_content == False or current_content != previous_content:
             
             summary = self._summarize_website_changes(previous_content, current_content)
             
@@ -159,16 +162,13 @@ class WebScanner:
         try:
             prev_data = content_collection.find_one({"name": name, "url": url, "date": yesterday_date})
         except Exception as e:
-            prev_data = {}
+            prev_data = None
 
         if prev_data:
             return convert_objectid_to_str(prev_data).get('content', '')
         return False
     
     def _summarize_website_changes(self, prev, cur):
-        
-        if not prev:
-            prev = ''
         
         response = self.client.chat.completions.create(
             model="gpt-4o",
