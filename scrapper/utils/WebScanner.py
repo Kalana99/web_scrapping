@@ -47,8 +47,11 @@ class WebScanner:
     
     def scan_single_website(self, name, url):
         
-        current_content = self._fetch_current_content(url)
-        previous_content = self._load_previous_content(name, url)
+        current_html_content = self._fetch_current_content(url)
+        previous_html_content = self._load_previous_content(name, url)
+        
+        current_content = self._parse_html(current_html_content.text)
+        previous_content = self._parse_html(previous_html_content)
         
         today_date = datetime.today().strftime('%Y-%m-%d')
         
@@ -61,14 +64,14 @@ class WebScanner:
                 "url": url,
                 "date": today_date,
                 "diff": False,
-                "summary": "Invalid URL. Required format: http(s)://example.domain (.com, .au, .lk, etc.)"
+                "summary": "Invalid URL or Service unavailable (try again later). Required format: http(s)://example.domain (.com, .au, .lk, etc.)"
             }, "")
             
         if previous_content == False or current_content != previous_content:
             
             summary = self._summarize_website_changes(previous_content, current_content)
             
-            self._save_current_content(name, url, current_content)
+            self._save_current_content(name, url, current_html_content.text)
             
             return ({
                 "name": name,
@@ -121,21 +124,38 @@ class WebScanner:
         
         try:
             response = requests.get(url)
-            soup = BeautifulSoup(response.content, 'html.parser')
+            response.raise_for_status()  # Raise an HTTPError for bad responses
             
-            # Extract text content excluding design elements
-            texts = soup.find_all(['p', 'h1', 'h2', 'h3'])
-            content = ' '.join([text.get_text() for text in texts])
-            
-            return content
+            return response
         except Exception as e:
             print(f"Error fetching content from {url}: {e}")
             return False
+        
+    def _parse_html(self, html):
+        
+        # Parse the HTML content
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        # Extract text content from all relevant tags
+        texts = soup.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'title', 'a', 'span'])
+        
+        seen_texts = set()  # Set to track unique text segments
+        unique_texts = []
+        
+        for text in texts:
+            cleaned_text = text.get_text(strip=True)
+            if cleaned_text not in seen_texts:
+                seen_texts.add(cleaned_text)
+                unique_texts.append(cleaned_text)
+        
+        content = ' '.join(unique_texts)
+        
+        return content
     
     def _load_previous_content(self, name, url):
         
         yesterday_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
-            
+        
         try:
             prev_data = content_collection.find_one({"name": name, "url": url, "date": yesterday_date})
         except Exception as e:
@@ -147,15 +167,19 @@ class WebScanner:
     
     def _summarize_website_changes(self, prev, cur):
         
+        if not prev:
+            prev = ''
+        
         response = self.client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o",
             messages=[
                 {
                     "role": "user",
-                    "content": f"Summarize the differences from the following previous and current contents of the same website. If the first text is the word False, simply summarize the second text. Otherwise, pointout the changes/updates between the two text in a structured format. Make sure to point out the spelling changes, title or subtitle changes, description additions or deletions. \n\nPrevious: \n{prev}\n\nCurrent: \n{cur}",
+                    "content": f"Below given is the html content of the same website in two different days. The Previous one is yesterday's content and the Current one is today's content. If the previous content is empty, simply say that there is no prior record. Otherwise, clearly identify the changes between the two web pages and summarize them as Content Additions, Content Removals, and Content Updates (Any changes in existing content). Then properly insert them into a json object that has above three fields in those exact names. Each of these fields should be a list of changes and each list item should clearly describe the corresponding change. It is not enough to mention what has added, deleted or updated. The list item should be a string and it should describe the change along with where it happened (ex: Title, Header, Footer, Body, Navigation bar, or any other subsection). There should be no other text in the output. Just the json object containing the above items. \n\nPrevious: \n{prev}\n\nCurrent: \n{cur}",
                 }
             ],
         )
+        
         return response.choices[0]
     
     def _summarize_diff(self, text1, text2):

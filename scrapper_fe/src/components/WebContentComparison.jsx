@@ -40,7 +40,7 @@ function WebContentComparison() {
 
             try {
                 const result = await webCompare({ name, url });
-                setResponse(result);
+                setResponse(JSON.parse(result.summary.replace(/```json\s*|\s*```/g, '')));
             } catch (error) {
                 console.error('Error comparing websites:', error);
                 // Handle error if needed
@@ -89,12 +89,39 @@ function WebContentComparison() {
             </Box>
             {response && (
                 <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', width: '100%' }}>
-                    <Typography variant="h6" sx={{ marginBottom: 1 }}>
-                        Comparison Result
+                    <Typography variant="h5" align='center' sx={{ marginBottom: 1 }}>
+                        Comparison Results
                     </Typography>
-                    <Typography variant="body1">
-                        {response.summary}
-                    </Typography>
+                    {response['Content Additions'] && response['Content Additions'].length > 0 && (
+                        <Box sx={{ margin: 2 }}>
+                            <Typography variant="subtitle1" fontWeight="fontWeightBold">Content Additions</Typography>
+                            <ul>
+                                {response['Content Additions'].map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        </Box>
+                    )}
+                    {response['Content Removals'] && response['Content Removals'].length > 0 && (
+                        <Box sx={{ margin: 2 }}>
+                            <Typography variant="subtitle1" fontWeight="fontWeightBold">Content Removals</Typography>
+                            <ul>
+                                {response['Content Removals'].map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        </Box>
+                    )}
+                    {response['Content Updates'] && response['Content Updates'].length > 0 && (
+                        <Box sx={{ margin: 2 }}>
+                            <Typography variant="subtitle1" fontWeight="fontWeightBold">Content Updates</Typography>
+                            <ul>
+                                {response['Content Updates'].map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        </Box>
+                    )}
                 </Paper>
             )}
         </Container>
