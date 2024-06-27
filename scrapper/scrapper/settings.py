@@ -156,6 +156,8 @@ web_urls = web_out[1]
 # Configure Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+'''
 CELERY_BEAT_SCHEDULE = {
     'fetch_news_every_weekday_morning': {
         'task': 'scheduler.tasks.fetch_news_for_names',
@@ -168,6 +170,7 @@ CELERY_BEAT_SCHEDULE = {
         'args': (web_clients, web_urls,)
     },
 }
+'''
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
