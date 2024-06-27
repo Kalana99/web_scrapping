@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import AppBarComp from './components/AppBarComp';
@@ -8,7 +8,43 @@ import NewsScrap from './components/NewsScrap';
 import TextComparison from './components/TextComparison';
 import URLCompare from './components/URLCompare';
 
+import api from './services/api';
+
 function App() {
+
+    useEffect(() => {
+
+        const checkTimeAndCallAPI = () => {
+
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            if (hours === 8 && minutes === 0) {
+                callAPI();
+            }
+        };
+
+        const callAPI = async () => {
+
+            try {
+
+                const web_response = await api.get('/scanner/all-website-scan/');
+                console.log(web_response.data.message);
+
+                // const news_response = await api.get('/scanner/all-news-scan/');
+                // console.log(news_response.data.message);
+            } 
+            catch (error) {
+                console.error('Error calling the API:', error);
+            }
+        };
+
+        const intervalId = setInterval(checkTimeAndCallAPI, 60000); // 60000 ms = 1 minute
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     return (
         <>
             <Router>
