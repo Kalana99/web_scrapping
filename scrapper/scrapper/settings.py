@@ -211,5 +211,5 @@ DB_NAME = env('DB_NAME')
 
 # Configure email settings
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-TO_EMAIL = env('TO_EMAIL')
+TO_EMAIL = ['Nash_peter@hotmail.com', 'tsliyan@hotmail.com', 'kalanarajika99@gmail.com']
 EMAIL_API_KEY = env('EMAIL_API_KEY')
