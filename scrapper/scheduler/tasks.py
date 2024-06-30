@@ -108,6 +108,9 @@ def send_news_summary_email(results):
 
 def send_web_difference_email(results: list[dict]):
     
+    emailClient = EmailClient()
+    content = ""
+    
     if len(results) > 0:
         
         content = "<p>Hello,</p><p>Here are the latest website content changes detected:</p>"
@@ -135,12 +138,14 @@ def send_web_difference_email(results: list[dict]):
             content += "<br>"
             
         content += "<p>Best regards</p>"
-        
-        emailClient = EmailClient()
+
         response = emailClient.send_email('Website Content Changes Detected', content)
+    else:
+        content = "<p>Hello,</p><p>No changes detected in the websites scanned.</p><p>Best regards</p>"
+        response = emailClient.send_email('No Website Content Changes Detected', content)
         
-        if response is not None:
-            return True
+    if response is not None:
+        return True
     return False
 
 def parse_str_to_json(summary: str):
