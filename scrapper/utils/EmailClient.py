@@ -6,7 +6,7 @@ class EmailClient:
     
     def __init__(self):
         
-        self.to_email = settings.TO_EMAIL
+        self.to_email = ['Nash_peter@hotmail.com', 'tsliyan@hotmail.com', 'kalanarajika99@gmail.com']
         self.from_email = settings.DEFAULT_FROM_EMAIL
         self.key = settings.EMAIL_API_KEY
     
