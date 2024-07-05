@@ -22,7 +22,6 @@ class ApifyClientHelper:
         run = self.client.actor("X81PxOydfbSEcYmNx").call(run_input=run_input)
         
         for item in self.client.dataset(run["defaultDatasetId"]).iterate_items():
-            print(item)
             self.items.append(item)
             
         return self.items

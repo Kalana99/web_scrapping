@@ -4,14 +4,12 @@ from .models import NewsScanResult, WebsiteContent
 from .serializers import NewsScanResultSerializer, WebsiteContentSerializer
 from scheduler.tasks import fetch_news_for_names, check_website_changes, fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
 
-from utils.ExcelReader import ExcelReader
 from utils.DBHelper import DBHelper
 
 @api_view(['GET'])
 def news_scan_results(request):
     
-    names = ExcelReader.read_news()[1]
-    results = fetch_news_for_names(names)
+    results = fetch_news_for_names()
     
     if results != False:
         return Response({"message": "News scan completed", "results": results})
@@ -20,8 +18,7 @@ def news_scan_results(request):
 @api_view(['GET'])
 def website_content(request):
     
-    names, urls = ExcelReader.read_web()
-    results = check_website_changes(names, urls)
+    results = check_website_changes()
     
     if results != False:
         return Response({"message": "Website scan completed", "results": results})
