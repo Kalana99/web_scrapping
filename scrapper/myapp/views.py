@@ -5,6 +5,7 @@ from .serializers import NewsScanResultSerializer, WebsiteContentSerializer
 from scheduler.tasks import fetch_news_for_names, check_website_changes, fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
 
 from utils.ExcelReader import ExcelReader
+from utils.DBHelper import DBHelper
 
 @api_view(['GET'])
 def news_scan_results(request):
@@ -76,3 +77,53 @@ def web_compare(request):
         return Response(changes)
     
     return Response({"error": "URL1 and URL2 are required"}, status=400)
+
+@api_view(['POST'])
+def add_web_client(request):
+    
+    name = request.data.get('name')
+    url = request.data.get('url')
+    
+    if name and url:
+        
+        if DBHelper.add_news_client(name, url):
+            return Response({"message": "Website client added"})
+    
+    return Response({"error": "Name and URL are required"}, status=400)
+
+@api_view(['POST'])
+def add_web_clients(request):
+    
+    clients = request.data.get('clients')
+    
+    if clients:
+        
+        DBHelper.add_web_clients(clients)
+        
+        return Response({"message": "Website clients added"})
+    
+    return Response({"error": "Clients are required"}, status=400)
+
+@api_view(['POST'])
+def add_news_client(request):
+    
+    name = request.data.get('name')
+    
+    if name:
+        
+        if DBHelper.add_news_client(name):
+            return Response({"message": "News client added"})
+    
+    return Response({"error": "Name is required"}, status=400)
+
+@api_view(['POST'])
+def add_news_clients(request):
+    
+    clients = request.data.get('clients')
+    
+    if clients:
+        
+        DBHelper.add_news_clients(clients)
+        return Response({"message": "News clients added"})
+    
+    return Response({"error": "Clients are required"}, status=400)
