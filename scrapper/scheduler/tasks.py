@@ -10,21 +10,23 @@ from myapp.models import NewsScanResult, WebsiteContent
 from django.conf import settings
 from celery import shared_task
 
+from utils.ExcelReader import ExcelReader
 from utils.WebScanner import WebScanner
 from utils.NewsScanner import NewsScanner
 from utils.EmailClient import EmailClient
 
 @shared_task
-def fetch_news_for_names(names):
+def fetch_news_for_names():
     
-    news = []
+    names = ExcelReader.read_news()[1]
+    news = {}
 
     for name in names:
         
         articles = fetch_news_for_name(name)
         
         if len(articles) > 0:
-            news.append({name: articles})
+            news[name] = articles
         
     if send_news_summary_email(news):
         return news
@@ -36,13 +38,12 @@ def fetch_news_for_name(name):
     news_scanner = NewsScanner()
     result = news_scanner.scan_single_news(name)
     
-    print(result)
     return result
 
 @shared_task
-def check_website_changes(names, urls):
+def check_website_changes():
     
-    print("Operating web change check email sending")
+    names, urls = ExcelReader.read_web()
     web_changes = []
     web_scanner = WebScanner()
     
@@ -84,18 +85,23 @@ def compare_text(text1, text2):
 
 def send_news_summary_email(results):
     
-    print(results)
-    
     if len(results) > 0:
         
         content = "<p>Hello,</p><p>Here are the latest news updates for our clients:</p>"
         
-        for result in results:
+        for name in results.keys():
             
-            content += f"<p><b>{result.name}</b><br>"
-            content += f"<b>Headline:</b> {result.headline}<br>"
-            content += f"<b>Summary:</b> {result.summary}<br>"
-            content += f"<b>Link:</b> <a href='{result.url}'>{result.url}</a></p>"
+            articles = results[name]
+            
+            content += f"<h3>{name}</h3>"
+            
+            for result in articles:
+                
+                print(result)
+                
+                content += f"<b>Headline:</b> {result['title']}<br>"
+                content += f"<b>Summary:</b> {result['description']}<br>"
+                content += f"<b>Link:</b> <a href='{result['url']}'>{result['url']}</a></p><br>"
             
         content += "<p>Best regards</p>"
         
