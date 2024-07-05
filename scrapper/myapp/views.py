@@ -20,7 +20,7 @@ def news_scan_results(request):
 def website_content(request):
     
     names, urls = ExcelReader.read_web()
-    results = check_website_changes(names[3], urls[3])
+    results = check_website_changes(names[:3], urls[:3])
     
     if results != False:
         return Response({"message": "Website scan completed", "results": results})
