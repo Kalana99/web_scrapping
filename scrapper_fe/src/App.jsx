@@ -20,7 +20,7 @@ function App() {
             const hours = now.getHours();
             const minutes = now.getMinutes();
 
-            if (hours === 14 && minutes === 43) {
+            if (hours === 9 && minutes === 0) {
                 console.log("about call API")
                 callAPI();
             }
@@ -33,8 +33,8 @@ function App() {
                 const web_response = await api.get('/scanner/all-website-scan/');
                 console.log(web_response.data.message);
 
-                // const news_response = await api.get('/scanner/all-news-scan/');
-                // console.log(news_response.data.message);
+                const news_response = await api.get('/scanner/all-news-scan/');
+                console.log(news_response.data.message);
             } 
             catch (error) {
                 console.error('Error calling the API:', error);
