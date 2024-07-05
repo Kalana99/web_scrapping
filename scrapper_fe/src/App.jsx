@@ -20,7 +20,7 @@ function App() {
             const hours = now.getHours();
             const minutes = now.getMinutes();
 
-            if (hours === 14 && minutes === 30) {
+            if (hours === 14 && minutes === 43) {
                 console.log("about call API")
                 callAPI();
             }
