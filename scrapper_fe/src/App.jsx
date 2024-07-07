@@ -27,8 +27,8 @@ function App() {
             const now = new Date();
             const hours = now.getHours();
             const minutes = now.getMinutes();
-
-            if (hours === 18 && minutes === 7) {
+          
+            if (hours === 9 && minutes === 0) {
                 callAPI();
             }
         };
