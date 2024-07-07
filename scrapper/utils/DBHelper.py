@@ -17,12 +17,16 @@ class DBHelper:
             
         try:
             if web_client_collection.find_one({"name": name, "url": url}) is None:
+                
                 web_client_collection.insert_one({"name": name, "url": url})
-            return True
+                return {"error": False, "message": "Web client added"}
+            
+            return {"error": True, "message": "Web client already exists!"}
         except Exception as e:
+            
             print(e)
             print(f"Error adding web client {name} at {url}")
-            return False
+            return {"error": True, "message": "Error adding web client!"}
     
     @staticmethod        
     def add_web_clients(clients):
@@ -36,18 +40,42 @@ class DBHelper:
         
         try:
             if news_client_collection.find_one({"name": name}) is None:
+                
                 news_client_collection.insert_one({"name": name})
-            return True
+                return {"error": False, "message": "News client added"}
+            
+            return {"error": True, "message": "News client already exists!"}
         except Exception as e:
+            
             print(e)
             print(f"Error adding news client {name}")
-            return False
+            return {"error": True, "message": "Error adding news client!"}
     
     @staticmethod    
     def add_news_clients(names):
         
         for name in names:
             DBHelper.add_news_client(name)
+            
+    @staticmethod
+    def get_web_clients():
+        
+        try:
+            clients = list(web_client_collection.find())
+            return DBHelper.convert_objectid_to_str(clients)
+        except Exception as e:
+            print(e)
+            return []
+        
+    @staticmethod
+    def get_news_clients():
+        
+        try:
+            clients = list(news_client_collection.find())
+            return DBHelper.convert_objectid_to_str(clients)
+        except Exception as e:
+            print(e)
+            return []
     
     @staticmethod
     def convert_objectid_to_str(data):

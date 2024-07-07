@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Typography, TextField, Button, Paper, Box } from '@mui/material';
 import useWebCompare from '../hooks/useWebCompare';
-import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
+import LoadingScreen from './helpers/LoadingScreen'; // Import the LoadingScreen component
 
 function WebContentComparison() {
 
@@ -52,9 +53,18 @@ function WebContentComparison() {
 
     return (
         <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
-            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
+            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center', fontWeight: 'bold' }}>
                 Website Content Comparison
             </Typography>
+            <Button
+                variant="outlined"
+                color="primary"
+                component={Link}
+                to="/web-clients"
+                sx={{ margin: 2 }}
+            >
+                View Web Clients
+            </Button>
             <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                 <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2, position: 'relative', minHeight: '200px', width: '100%' }}>
                     {loading && <LoadingScreen />} {/* Render LoadingScreen component when loading is true */}

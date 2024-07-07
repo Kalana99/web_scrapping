@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItemButton, ListItemText, useTheme, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import logo from '../assets/logo-removebg-preview.png';
+import logo from '../../assets/logo-removebg-preview.png';
 
 function AppBarComp() {
     const [drawerOpen, setDrawerOpen] = useState(false);

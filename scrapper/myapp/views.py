@@ -83,10 +83,13 @@ def add_web_client(request):
     
     if name and url:
         
-        if DBHelper.add_news_client(name, url):
-            return Response({"message": "Website client added"})
+        result = DBHelper.add_web_client(name, url)
+        
+        if not result["error"]:
+            return Response(result)
+        return Response(result, status=400)
     
-    return Response({"error": "Name and URL are required"}, status=400)
+    return Response({"error": True, "message": "Name and URL are required"}, status=400)
 
 @api_view(['POST'])
 def add_web_clients(request):
@@ -108,10 +111,13 @@ def add_news_client(request):
     
     if name:
         
-        if DBHelper.add_news_client(name):
-            return Response({"message": "News client added"})
+        result = DBHelper.add_news_client(name)
+        
+        if not result["error"]:
+            return Response(result)
+        return Response(result, status=400)
     
-    return Response({"error": "Name is required"}, status=400)
+    return Response({"error": True, "message": "Name is required"}, status=400)
 
 @api_view(['POST'])
 def add_news_clients(request):
@@ -124,3 +130,23 @@ def add_news_clients(request):
         return Response({"message": "News clients added"})
     
     return Response({"error": "Clients are required"}, status=400)
+
+@api_view(['GET'])
+def get_web_clients(request):
+    
+    try: 
+        clients = DBHelper.get_web_clients()
+        return Response(clients)
+    except Exception as e:
+        print(e)
+        return Response({"error": str(e)}, status=500)
+
+@api_view(['GET'])
+def get_news_clients(request):
+    
+    try:
+        clients = DBHelper.get_news_clients()
+        return Response(clients)
+    except Exception as e:
+        print(e)
+        return Response({"error": str(e)}, status=500)
