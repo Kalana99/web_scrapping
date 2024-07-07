@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import news_scan_results, website_content, single_news_scan, single_website_scan, text_compare, web_compare, add_web_client, add_web_clients, add_news_client, add_news_clients
+from .views import news_scan_results, website_content, single_news_scan, single_website_scan, text_compare, web_compare, add_web_client, add_web_clients, add_news_client, add_news_clients, get_web_clients, get_news_clients
 
 urlpatterns = [
     path('all-news-scan/', news_scan_results, name='all_news_scan'),
@@ -12,4 +12,6 @@ urlpatterns = [
     path('add-web-clients/', add_web_clients, name='add_web_clients'),
     path('add-news-client/', add_news_client, name='add_news_client'),
     path('add-news-clients/', add_news_clients, name='add_news_clients'),
+    path('get-web-clients/', get_web_clients, name='get_web_clients'),
+    path('get-news-clients/', get_news_clients, name='get_news_clients'),
 ]

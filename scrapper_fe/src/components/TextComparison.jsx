@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Grid, Typography, TextField, Button, Paper, Divider } from '@mui/material';
 import useTextCompare from '../hooks/useTextCompare';
-import LoadingScreen from './LoadingScreen'; // Replace with the correct path to LoadingScreen
+import LoadingScreen from './helpers/LoadingScreen'; // Replace with the correct path to LoadingScreen
 
 function TextComparison() {
 
@@ -38,7 +38,7 @@ function TextComparison() {
 
     return (
         <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
-            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
+            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center', fontWeight: 'bold' }}>
                 Text Comparison
             </Typography>
             <Paper sx={{ width: '100%', padding: 2, backgroundColor: '#f0f0f0', marginBottom: 4 }}>

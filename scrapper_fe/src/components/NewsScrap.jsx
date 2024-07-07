@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Typography, TextField, Button, Paper } from '@mui/material';
 import useNewsScrap from '../hooks/useNewsScrap';
-import LoadingScreen from './LoadingScreen'; // Import the LoadingScreen component
+import LoadingScreen from './helpers/LoadingScreen'; // Import the LoadingScreen component
 
 function NewsScrap() {
 
@@ -35,9 +36,18 @@ function NewsScrap() {
 
     return (
         <Container maxWidth="md" sx={{ marginTop: 0, paddingTop: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', backgroundColor: 'transparent' }}>
-            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center' }}>
+            <Typography variant="h4" sx={{ marginTop: 4, marginBottom: 2, textAlign: 'center', fontWeight: 'bold' }}>
                 News Scraping
             </Typography>
+            <Button
+                variant="outlined"
+                color="primary"
+                component={Link}
+                to="/news-clients"
+                sx={{ margin: 2 }}
+            >
+                View News Clients
+            </Button>
             <Paper sx={{ padding: 2, backgroundColor: '#f0f0f0', marginBottom: 2, position: 'relative', minHeight: '200px', width: '100%' }}>
                 {loading && <LoadingScreen />} {/* Render LoadingScreen component when loading is true */}
                 <form onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '100%' }}>
