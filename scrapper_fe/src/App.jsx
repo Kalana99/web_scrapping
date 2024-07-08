@@ -10,11 +10,11 @@ import URLCompare from './components/URLCompare';
 
 import WebClientList from './components/clientComponents/WebClientList';
 import AddWebClient from './components/clientComponents/AddWebClient';
-// import BulkUploadWeb from './components/BulkUploadWeb';
+import BulkAddWebClient from './components/clientComponents/BulkAddWebClient';
 
 import NewsClientList from './components/clientComponents/NewsClientList';
 import AddNewsClient from './components/clientComponents/AddNewsClient';
-// import BulkUploadNews from './components/BulkUploadNews';
+import BulkAddNewsClient from './components/clientComponents/BulkAddNewsClient';
 
 import api from './services/api';
 
@@ -66,11 +66,11 @@ function App() {
 
                     <Route path="/web-clients" element={<WebClientList />} />
                     <Route path="/add-web-client" element={<AddWebClient />} />
-                    {/* <Route path="/bulk-upload-web" element={<BulkUploadWeb />} /> */}
+                    <Route path="/bulk-upload-web" element={<BulkAddWebClient />} />
 
                     <Route path="/news-clients" element={<NewsClientList />} />
                     <Route path="/add-news-client" element={<AddNewsClient />} />
-                    {/* <Route path="/bulk-upload-news" element={<BulkUploadNews />} /> */}
+                    <Route path="/bulk-upload-news" element={<BulkAddNewsClient />} />
                 </Routes>
             </Router>
         </>
