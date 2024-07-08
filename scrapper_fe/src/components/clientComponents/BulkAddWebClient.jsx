@@ -53,7 +53,7 @@ function BulkAddWebClient() {
             else {
 
                 Papa.parse(data, {
-                    header: true,
+                    header: false,
                     complete: (results) => {
                         processFileData(results.data);
                     },
