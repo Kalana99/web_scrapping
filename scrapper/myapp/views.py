@@ -1,5 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from collections import defaultdict
 from .models import NewsScanResult, WebsiteContent
 from .serializers import NewsScanResultSerializer, WebsiteContentSerializer
 from scheduler.tasks import fetch_news_for_names, check_website_changes, fetch_news_for_name, fetch_and_compare_website_content, fetch_and_compare_two_websites, compare_text
@@ -94,15 +95,15 @@ def add_web_client(request):
 @api_view(['POST'])
 def add_web_clients(request):
     
-    clients = request.data.get('clients')
+    clients = convert_to_dict(request.data)
     
     if clients:
         
-        DBHelper.add_web_clients(clients)
+        result = DBHelper.add_web_clients(clients)
         
-        return Response({"message": "Website clients added"})
+        return Response(result)
     
-    return Response({"error": "Clients are required"}, status=400)
+    return Response({"error": True, "message": "Clients are required"}, status=400)
 
 @api_view(['POST'])
 def add_news_client(request):
@@ -122,14 +123,14 @@ def add_news_client(request):
 @api_view(['POST'])
 def add_news_clients(request):
     
-    clients = request.data.get('clients')
+    clients = convert_to_dict(request.data)
     
     if clients:
         
-        DBHelper.add_news_clients(clients)
-        return Response({"message": "News clients added"})
+        result = DBHelper.add_news_clients(clients)
+        return Response(result)
     
-    return Response({"error": "Clients are required"}, status=400)
+    return Response({"error": True, "message": "Clients are required"}, status=400)
 
 @api_view(['GET'])
 def get_web_clients(request):
@@ -150,3 +151,26 @@ def get_news_clients(request):
     except Exception as e:
         print(e)
         return Response({"error": str(e)}, status=500)
+
+def convert_to_dict(query_dict):
+    
+    dict_data = dict(query_dict.lists())
+
+    # Group by index
+    grouped_data = defaultdict(dict)
+    
+    for key, values in dict_data.items():
+        
+        if values:
+            
+            # Extract the index and the field name
+            index = int(key.split('[')[1].split(']')[0])
+            field = key.split('[')[2].split(']')[0]
+            
+            # Assign the value to the appropriate place in the grouped_data dictionary
+            grouped_data[index][field] = values[0].strip()
+
+    # Convert grouped_data to a list of dictionaries
+    list_of_dicts = [grouped_data[index] for index in sorted(grouped_data.keys())]
+    
+    return list_of_dicts

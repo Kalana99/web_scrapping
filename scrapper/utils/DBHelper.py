@@ -30,10 +30,19 @@ class DBHelper:
     
     @staticmethod        
     def add_web_clients(clients):
-        pass
         
-    #     for i in range(len(clients)):
-    #         DBHelper.add_web_client(names[i], urls[i])
+        added = 0
+        ignored = 0
+        
+        for i in range(len(clients)):
+            
+            result = DBHelper.add_web_client(clients[i]['name'], clients[i]['url'])
+            
+            if result["error"]:
+                ignored += 1
+            else:
+                added += 1
+        return {"error": False, "message": f"{added} clients added, {ignored} ignored"}
     
     @staticmethod        
     def add_news_client(name):
@@ -52,10 +61,21 @@ class DBHelper:
             return {"error": True, "message": "Error adding news client!"}
     
     @staticmethod    
-    def add_news_clients(names):
+    def add_news_clients(clients):
         
-        for name in names:
-            DBHelper.add_news_client(name)
+        added = 0
+        ignored = 0
+        
+        for client in clients:
+            
+            result = DBHelper.add_news_client(client['name'])
+            
+            if result["error"]:
+                ignored += 1
+            else:
+                added += 1
+                
+        return {"error": False, "message": f"{added} clients added, {ignored} ignored"}
             
     @staticmethod
     def get_web_clients():

@@ -9,9 +9,9 @@ urlpatterns = [
     path('text-compare/', text_compare, name='text_compare'),
     path('web-compare/', web_compare, name='web_compare'),
     path('add-web-client/', add_web_client, name='add_web_client'),
-    path('add-web-clients/', add_web_clients, name='add_web_clients'),
+    path('bulk-add-web-clients/', add_web_clients, name='bulk_add_web_clients'),
     path('add-news-client/', add_news_client, name='add_news_client'),
-    path('add-news-clients/', add_news_clients, name='add_news_clients'),
+    path('bulk-add-news-clients/', add_news_clients, name='bulk_add_news_clients'),
     path('get-web-clients/', get_web_clients, name='get_web_clients'),
     path('get-news-clients/', get_news_clients, name='get_news_clients'),
 ]

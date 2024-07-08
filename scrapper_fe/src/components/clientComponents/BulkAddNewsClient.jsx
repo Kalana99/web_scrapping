@@ -18,25 +18,36 @@ import Papa from 'papaparse';
 import api from '../../services/api';
 
 function BulkAddNewsClient() {
+
     const [clients, setClients] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleFileUpload = (e) => {
+
         setLoading(true);
+
         const file = e.target.files[0];
         const reader = new FileReader();
+
         reader.onload = (event) => {
+
             const data = event.target.result;
+
             if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+
                 const workbook = XLSX.read(data, { type: 'binary' });
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
                 processFileData(jsonData);
-            } else {
+            } 
+            else {
+
                 Papa.parse(data, {
                     header: true,
                     complete: (results) => {
@@ -45,20 +56,25 @@ function BulkAddNewsClient() {
                 });
             }
         };
+
         reader.onloadend = () => setLoading(false);
         reader.readAsBinaryString(file);
     };
 
     const processFileData = (data) => {
+
         const parsedClients = data.slice(1).map((row) => ({
             name: row[0],
         })).filter((client) => client.name); // Filter out invalid rows
+
         setClients(parsedClients);
     };
 
     const handleInputChange = (index, field, value) => {
+
         const updatedClients = [...clients];
         updatedClients[index][field] = value;
+
         setClients(updatedClients);
     };
 
@@ -76,22 +92,30 @@ function BulkAddNewsClient() {
     };
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
         setLoading(true);
+
         try {
-            const response = await api.post('/scanner/bulk-add-news-clients/', clients);
+
+            const response = await api.post('/scanner/bulk-add-news-clients/', {clients});
+
             if (response.data.error) {
                 setErrorMessage(response.data.message);
-            } else {
-                setSuccessMessage('News clients added successfully!');
+            } 
+            else {
+
+                setSuccessMessage(response.data.message);
                 setTimeout(() => {
                     navigate('/news-clients', { state: { successMessage: 'News clients added successfully!' } });
-                }, 1000); // Delay navigation by 2 seconds
+                }, 1000);
             }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error adding news clients:', error);
             setErrorMessage('An error occurred while adding the news clients.');
-        } finally {
+        } 
+        finally {
             setLoading(false);
         }
     };
