@@ -156,18 +156,21 @@ web_urls = web_out[1]
 # Configure Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+'''
 CELERY_BEAT_SCHEDULE = {
     'fetch_news_every_weekday_morning': {
         'task': 'scheduler.tasks.fetch_news_for_names',
-        'schedule': crontab(hour=9, minute=0, day_of_week='mon-fri'),
+        'schedule': crontab(hour=6, minute=0, day_of_week='mon-fri'),
         'args': (news_names,)
     },
     'check_website_changes_daily': {
         'task': 'scheduler.tasks.check_website_changes',
-        'schedule': crontab(hour=1, minute=0, day_of_week='mon-sun'),
+        'schedule': crontab(hour=6, minute=0, day_of_week='mon-fri'),
         'args': (web_clients, web_urls,)
     },
 }
+'''
 
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
@@ -208,5 +211,6 @@ DB_NAME = env('DB_NAME')
 
 # Configure email settings
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
-TO_EMAIL = env('TO_EMAIL')
+# TO_EMAIL = ['Nash_peter@hotmail.com', 'tsliyan@hotmail.com', 'kalanarajika99@gmail.com']
+TO_EMAIL = 'kalanarajika99@gmail.com'
 EMAIL_API_KEY = env('EMAIL_API_KEY')

@@ -41,6 +41,7 @@ function WebContentComparison() {
 
             try {
                 const result = await webCompare({ name, url });
+                console.log(result)
                 setResponse(JSON.parse(result.summary.replace(/```json\s*|\s*```/g, '')));
             } catch (error) {
                 console.error('Error comparing websites:', error);
