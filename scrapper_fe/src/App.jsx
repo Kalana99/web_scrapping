@@ -2,6 +2,13 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import AppBarComp from './components/helpers/AppBarComp';
+
+import StartupPage from './pages/StartupPage';
+import LoginPage from './components/authComponents/LoginPage';
+import SignupPage from './components/authComponents/SignupPage';
+import ProtectedRoute from './components/authComponents/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+
 import Homepage from './pages/Homepage';
 import WebContentComparison from './components/WebContentComparison';
 import NewsScrap from './components/NewsScrap';
@@ -27,7 +34,7 @@ function App() {
             const now = new Date();
             const hours = now.getHours();
             const minutes = now.getMinutes();
-          
+
             if (hours === 9 && minutes === 0) {
                 callAPI();
             }
@@ -42,7 +49,7 @@ function App() {
 
                 const news_response = await api.get('/scanner/all-news-scan/');
                 console.log(news_response.data.message);
-            } 
+            }
             catch (error) {
                 console.error('Error calling the API:', error);
             }
@@ -54,26 +61,30 @@ function App() {
     }, []);
 
     return (
-        <>
+        <AuthProvider>
             <Router>
                 <AppBarComp />
                 <Routes>
-                    <Route exact path="/" element={<Homepage />} />
-                    <Route path="/website-comparison" element={<WebContentComparison />} />
-                    <Route path="/news-scraping" element={<NewsScrap />} />
-                    <Route path="/text-comparison" element={<TextComparison />} />
-                    <Route path="/url-comparison" element={<URLCompare />} />
+                    <Route exact path="/" element={<StartupPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
 
-                    <Route path="/web-clients" element={<WebClientList />} />
-                    <Route path="/add-web-client" element={<AddWebClient />} />
-                    <Route path="/bulk-upload-web" element={<BulkAddWebClient />} />
+                    <Route path="/home" element={<ProtectedRoute><Homepage /></ProtectedRoute>} />
+                    <Route path="/website-comparison" element={<ProtectedRoute><WebContentComparison /></ProtectedRoute>} />
+                    <Route path="/news-scraping" element={<ProtectedRoute><NewsScrap /></ProtectedRoute>} />
+                    <Route path="/text-comparison" element={<ProtectedRoute><TextComparison /></ProtectedRoute>} />
+                    <Route path="/url-comparison" element={<ProtectedRoute><URLCompare /></ProtectedRoute>} />
 
-                    <Route path="/news-clients" element={<NewsClientList />} />
-                    <Route path="/add-news-client" element={<AddNewsClient />} />
-                    <Route path="/bulk-upload-news" element={<BulkAddNewsClient />} />
+                    <Route path="/web-clients" element={<ProtectedRoute><WebClientList /></ProtectedRoute>} />
+                    <Route path="/add-web-client" element={<ProtectedRoute><AddWebClient /></ProtectedRoute>} />
+                    <Route path="/bulk-upload-web" element={<ProtectedRoute><BulkAddWebClient /></ProtectedRoute>} />
+
+                    <Route path="/news-clients" element={<ProtectedRoute><NewsClientList /></ProtectedRoute>} />
+                    <Route path="/add-news-client" element={<ProtectedRoute><AddNewsClient /></ProtectedRoute>} />
+                    <Route path="/bulk-upload-news" element={<ProtectedRoute><BulkAddNewsClient /></ProtectedRoute>} />
                 </Routes>
             </Router>
-        </>
+        </AuthProvider>
     );
 }
 
