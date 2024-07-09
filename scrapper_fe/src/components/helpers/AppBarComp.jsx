@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItemButton, ListItemText, useTheme, useMediaQuery } from '@mui/material';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    Box,
+    IconButton,
+    Drawer,
+    List,
+    ListItemButton,
+    ListItemText,
+    useTheme,
+    useMediaQuery,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useAuth } from '../../context/AuthContext';
 
 import logo from '../../assets/logo-removebg-preview.png';
 
@@ -9,6 +23,7 @@ function AppBarComp() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const { user, logout } = useAuth();
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -34,6 +49,11 @@ function AppBarComp() {
                 <ListItemButton component={Link} to="/url-comparison">
                     <ListItemText primary="URL Comparison" />
                 </ListItemButton>
+                {user && (
+                    <ListItemButton onClick={logout}>
+                        <ListItemText primary="Logout" />
+                    </ListItemButton>
+                )}
             </List>
         </Box>
     );
@@ -74,8 +94,8 @@ function AppBarComp() {
                                 fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
                                 '&:hover': {
                                     color: 'inherit',
-                                    opacity: 0.8
-                                }
+                                    opacity: 0.8,
+                                },
                             }}
                         >
                             ScrapperAI
@@ -92,8 +112,8 @@ function AppBarComp() {
                                     padding: '0.75rem 1.5rem',
                                     '&:hover': {
                                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                        color: '#ffffff'
-                                    }
+                                        color: '#ffffff',
+                                    },
                                 }}
                             >
                                 Website Comparison
@@ -107,8 +127,8 @@ function AppBarComp() {
                                     padding: '0.75rem 1.5rem',
                                     '&:hover': {
                                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                        color: '#ffffff'
-                                    }
+                                        color: '#ffffff',
+                                    },
                                 }}
                             >
                                 News Scraping
@@ -122,8 +142,8 @@ function AppBarComp() {
                                     padding: '0.75rem 1.5rem',
                                     '&:hover': {
                                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                        color: '#ffffff'
-                                    }
+                                        color: '#ffffff',
+                                    },
                                 }}
                             >
                                 Text Comparison
@@ -137,12 +157,28 @@ function AppBarComp() {
                                     padding: '0.75rem 1.5rem',
                                     '&:hover': {
                                         backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                        color: '#ffffff'
-                                    }
+                                        color: '#ffffff',
+                                    },
                                 }}
                             >
                                 URL Comparison
                             </Button>
+                            {user && (
+                                <Button
+                                    color="inherit"
+                                    onClick={logout}
+                                    sx={{
+                                        fontSize: '1rem',
+                                        padding: '0.75rem 1.5rem',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                            color: '#ffffff',
+                                        },
+                                    }}
+                                >
+                                    Logout
+                                </Button>
+                            )}
                         </Box>
                     )}
                 </Toolbar>
