@@ -67,7 +67,7 @@ function AppBarComp() {
                 <ListItemButton component={Link} to="/url-comparison">
                     <ListItemText primary="URL Comparison" />
                 </ListItemButton>
-                {user && (
+                {user && user.emailVerified && (
                     <ListItemButton onClick={handleDialogOpen}>
                         <ListItemText primary="Logout" />
                     </ListItemButton>
@@ -181,7 +181,7 @@ function AppBarComp() {
                             >
                                 URL Comparison
                             </Button>
-                            {user && (
+                            {user && user.emailVerified && (
                                 <Button
                                     color="inherit"
                                     onClick={handleDialogOpen}
