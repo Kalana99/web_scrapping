@@ -13,20 +13,38 @@ import {
     ListItemText,
     useTheme,
     useMediaQuery,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAuth } from '../../context/AuthContext';
-
 import logo from '../../assets/logo-removebg-preview.png';
 
 function AppBarComp() {
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { user, logout } = useAuth();
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
+    };
+
+    const handleDialogOpen = () => {
+        setDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleDialogClose();
     };
 
     const drawer = (
@@ -50,7 +68,7 @@ function AppBarComp() {
                     <ListItemText primary="URL Comparison" />
                 </ListItemButton>
                 {user && (
-                    <ListItemButton onClick={logout}>
+                    <ListItemButton onClick={handleDialogOpen}>
                         <ListItemText primary="Logout" />
                     </ListItemButton>
                 )}
@@ -166,7 +184,7 @@ function AppBarComp() {
                             {user && (
                                 <Button
                                     color="inherit"
-                                    onClick={logout}
+                                    onClick={handleDialogOpen}
                                     sx={{
                                         fontSize: '1rem',
                                         padding: '0.75rem 1.5rem',
@@ -191,6 +209,27 @@ function AppBarComp() {
             >
                 {drawer}
             </Drawer>
+            <Dialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Logout Confirmation"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to logout?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleLogout} color="primary" autoFocus>
+                        Logout
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }
