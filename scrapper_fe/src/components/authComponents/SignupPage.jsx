@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Paper, Box, CircularProgress } from '@mui/material';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../auth/firebase';
 
 function SignupPage() {
@@ -24,8 +24,9 @@ function SignupPage() {
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            navigate('/login');
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await sendEmailVerification(userCredential.user);
+            navigate('/verify-email');
         } catch (error) {
             setError(error.message);
         } finally {
