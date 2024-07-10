@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Paper, Box, CircularProgress } from '@mui/material';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../../auth/firebase';
 
 function LoginPage() {
@@ -9,6 +9,7 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -17,12 +18,25 @@ function LoginPage() {
         setError('');
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            if (!userCredential.user.emailVerified) {
+                setUser(userCredential.user);
+                setError('Email not verified. Please verify your email.');
+                setLoading(false);
+                return;
+            }
             navigate('/home');
         } catch (error) {
             setError(error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResendVerification = async () => {
+        if (user) {
+            await sendEmailVerification(user);
+            setError('Verification email resent. Please check your inbox.');
         }
     };
 
@@ -52,13 +66,29 @@ function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    {error && <Typography color="error" sx={{ marginBottom: 2 }}>{error}</Typography>}
+                    {error && (
+                        <>
+                            <Typography color="error" sx={{ marginBottom: 2 }}>
+                                {error}
+                            </Typography>
+                            {user && (
+                                <Button variant="contained" color="primary" onClick={handleResendVerification}>
+                                    Resend Verification Email
+                                </Button>
+                            )}
+                        </>
+                    )}
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Button variant="contained" color="primary" type="submit" disabled={loading}>
                             {loading ? <CircularProgress size={24} /> : 'Login'}
                         </Button>
                     </Box>
                 </form>
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                    <Button variant="text" onClick={() => navigate('/reset-password')}>
+                        Forgot Password?
+                    </Button>
+                </Box>
             </Paper>
         </Container>
     );

@@ -6,6 +6,8 @@ import AppBarComp from './components/helpers/AppBarComp';
 import StartupPage from './pages/StartupPage';
 import LoginPage from './components/authComponents/LoginPage';
 import SignupPage from './components/authComponents/SignupPage';
+import VerifyEmailPage from './pages/VerifyEmailPage';
+import PasswordResetPage from './pages/PasswordResetPage';
 import ProtectedRoute from './components/authComponents/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 
@@ -68,6 +70,8 @@ function App() {
                     <Route exact path="/" element={<StartupPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/verify-email" element={<VerifyEmailPage />} />
+                    <Route path="/reset-password" element={<PasswordResetPage />} />
 
                     <Route path="/home" element={<ProtectedRoute><Homepage /></ProtectedRoute>} />
                     <Route path="/website-comparison" element={<ProtectedRoute><WebContentComparison /></ProtectedRoute>} />

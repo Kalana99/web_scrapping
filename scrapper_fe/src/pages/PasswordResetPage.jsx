@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Paper, Box, CircularProgress } from '@mui/material';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
-import { auth } from '../../auth/firebase';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../auth/firebase';
 
-function SignupPage() {
+function PasswordResetPage() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -16,17 +15,11 @@ function SignupPage() {
         e.preventDefault();
         setLoading(true);
         setError('');
-
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            setLoading(false);
-            return;
-        }
+        setSuccess('');
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await sendEmailVerification(userCredential.user);
-            navigate('/verify-email');
+            await sendPasswordResetEmail(auth, email);
+            setSuccess('Password reset email sent. Please check your inbox.');
         } catch (error) {
             setError(error.message);
         } finally {
@@ -38,7 +31,7 @@ function SignupPage() {
         <Container sx={{ marginTop: 0, paddingTop: 15 }}>
             <Paper sx={{ padding: 3, backgroundColor: '#f9f9f9', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
                 <Typography variant="h4" sx={{ marginBottom: 3, textAlign: 'center', fontWeight: 'bold' }}>
-                    Signup
+                    Reset Password
                 </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField
@@ -50,36 +43,22 @@ function SignupPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ marginBottom: 2 }}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    <TextField
-                        label="Confirm Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        sx={{ marginBottom: 2 }}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                    />
                     {error && <Typography color="error" sx={{ marginBottom: 2 }}>{error}</Typography>}
+                    {success && <Typography color="primary" sx={{ marginBottom: 2 }}>{success}</Typography>}
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <Button variant="contained" color="primary" type="submit" disabled={loading}>
-                            {loading ? <CircularProgress size={24} /> : 'Signup'}
+                            {loading ? <CircularProgress size={24} /> : 'Send Reset Email'}
                         </Button>
                     </Box>
                 </form>
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                    <Button variant="text" onClick={() => navigate('/login')}>
+                        Back to Login
+                    </Button>
+                </Box>
             </Paper>
         </Container>
     );
 }
 
-export default SignupPage;
+export default PasswordResetPage;
